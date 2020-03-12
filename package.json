@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/deep-equal": "^1.0.1",
+    "deep-equal": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3"
+  },
+  "name": "cyril",
+  "version": "1.0.0",
+  "description": "a strongly-typed monadic link",
+  "main": "src/index.ts",
+  "author": "Joseph Weissman <joseph@cypress.io>",
+  "license": "MIT",
+  "private": true
+}
