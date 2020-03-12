@@ -2,22 +2,53 @@ import cyr from "."
 
 describe("Cyril", () => {
     beforeEach(() => cyr.reset())
+    afterEach(() => cyr.verify())
 
-    it('verifies links', () => {
-        cyr.wrap(2+2).expect().toBe(4)
-        cyr.wrap("hello " + "world").expect().toBe('hello world')
-        cyr.wrap({a: 1}).expect().toBe({a: 1})
-        cyr.verify()
+    describe("basics", () => {
+        describe('verifies links', () => {
+            it('numbers', () => cyr.expect(2+2).toBe(4))
+            it('arrays',  () => cyr.wrap([1 + 2, 3 + 4]).expect().toBe([3, 7]))
+            it('strings', () => cyr.wrap("hello " + "world").expect().toBe('hello world'))
+            it('objects', () => cyr.wrap({ a: 1 }).expect().toBe({ a: 1 }))
+            it('complex structures', () => cyr.wrap(process).expect('env').its('USER').toBe(process.env.USER))
+        })
+
+        describe('simple lenses', () => {
+            it('properties', () => cyr.wrap({ a: 1 }).expect('a').toBe(1))
+            it('methods', () => cyr.expect({ a: { fn: () => 'hi' } }).its('a').invokes('fn').toBe('hi'))
+            it('gloms', () => cyr.wrap({ a: { nested: { prop: 'val' }}})
+                                 .expect().glom('a', 'nested', 'prop').toBe('val'))
+        });
+
+        it.skip('throws on failure', () => cyr.expect(2 + 2).toBe(5))
+
+        it('verifies a link with a promise', () => {
+            let two = new Promise<number>((resolve) => setTimeout(() => resolve(2), 1000))
+            cyr.expect(two).toBe(2)
+        })
     })
 
-    it('throws on failure', () => {
-        cyr.wrap(2+2).expect().toBe(5)
-        expect(() => cyr.verify()).toThrow()
-    })
+    describe('scenarios', () => {
+        it('logs', () => {
+            cyr.log("hi there, world")
+            cyr.output().expect().toMatch("hi there")
+        })
 
-    it('verifies a link with a promise', () => {
-        let two = new Promise((resolve) => setTimeout(() => resolve(100), 100))
-        cyr.expect(two).toBe(2)
-        cyr.verify()
+        xit('bdd', () => {
+            cyr.describe('a feature', () => {
+                cyr.it('works', () => {
+                    cyr.log('ok')
+                    cyr.expect(4 * 4).toBe(16)
+                })
+            })
+        })
+
+        xit('mixing commands and expectations', () => {
+            let count = 0;
+            let counter = cyr.wrap({ count, increment: () => count++ })
+            counter.expect('count').toBe(0)
+            counter.invokes('increment')
+            counter.expect('count').toBe(1)
+        })
     })
 })

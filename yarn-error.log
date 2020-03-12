@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/joseph/.nvm/versions/node/v12.16.1/bin/node /usr/local/Cellar/yarn/1.22.0/libexec/bin/yarn.js init
+  /Users/joseph/.nvm/versions/node/v12.16.1/bin/node /usr/local/Cellar/yarn/1.22.0/libexec/bin/yarn.js add assertNever
 
 PATH: 
   /Users/joseph/.nvm/versions/node/v12.16.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/joseph/.nvm/versions/node/v12.16.1/bin
@@ -14,17 +14,17 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: canceled
-      at Interface.<anonymous> (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:136987:13)
-      at Interface.emit (events.js:311:20)
-      at Interface._ttyWrite (readline.js:893:16)
-      at ReadStream.onkeypress (readline.js:198:10)
-      at ReadStream.emit (events.js:311:20)
-      at emitKeys (internal/readline/utils.js:438:14)
-      at emitKeys.next (<anonymous>)
-      at ReadStream.onData (readline.js:1160:36)
-      at ReadStream.emit (events.js:311:20)
-      at addChunk (_stream_readable.js:294:12)
+  Error: https://registry.yarnpkg.com/assertNever: Not found
+      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:66975:18)
+      at Request.self.callback (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:140727:22)
+      at Request.emit (events.js:311:20)
+      at Request.<anonymous> (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:141699:10)
+      at Request.emit (events.js:311:20)
+      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.22.0/libexec/lib/cli.js:141621:12)
+      at Object.onceWrapper (events.js:417:28)
+      at IncomingMessage.emit (events.js:323:22)
+      at endReadableNT (_stream_readable.js:1204:12)
+      at processTicksAndRejections (internal/process/task_queues.js:84:21)
 
 npm manifest: 
   {
@@ -37,10 +37,18 @@ npm manifest:
     },
     "devDependencies": {
       "@types/jest": "^25.1.4",
+      "@types/node": "^13.9.0",
       "jest": "^25.1.0",
       "ts-jest": "^25.2.1",
       "typescript": "^3.8.3"
-    }
+    },
+    "name": "cyril",
+    "version": "1.0.0",
+    "description": "a strongly-typed monadic link",
+    "main": "src/index.ts",
+    "author": "Joseph Weissman <joseph@cypress.io>",
+    "license": "MIT",
+    "private": true
   }
 
 yarn manifest: 
@@ -451,6 +459,11 @@ Lockfile:
     dependencies:
       jest-diff "^25.1.0"
       pretty-format "^25.1.0"
+  
+  "@types/node@^13.9.0":
+    version "13.9.0"
+    resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.0.tgz#5b6ee7a77faacddd7de719017d0bc12f52f81589"
+    integrity sha512-0ARSQootUG1RljH2HncpsY2TJBfGQIKOOi7kxzUY6z54ePu/ZD+wJA8zI2Q6v8rol2qpG/rvqsReco8zNMPvhQ==
   
   "@types/stack-utils@^1.0.1":
     version "1.0.1"
