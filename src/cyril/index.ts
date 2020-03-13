@@ -14,9 +14,6 @@ export namespace Cyril {
      * Box implements a declarative monadic link builder.
      */
     export class Box<Subject> implements Container<Subject> {
-        invokes(arg0: string) {
-            throw new Error("Method not implemented.");
-        }
         static empty() { return new Box(new NullSubject()) }
         static with<T>(e: T): Box<T> { return new Box(e) }
         constructor(protected entity: Subject) {}
@@ -58,6 +55,17 @@ export namespace Cyril {
     class ExactValue { constructor(public value: any) {} }
     class MatchValue { constructor(public value: any) {} }
 
+    /**
+     * An Expectation asserts a claim on the subject.
+     * 
+     * @example ```
+     *   // 2 + 2 == 4
+     *   cyr.expect(2+2).toBe(4)
+     * 
+     *   // 'hello world' matches /hello/
+     *   cyr.expect("hello world").toMatch("hello")
+     * ```
+     */
     export class Expectation<Subject> implements Container<Subject> {
         public lenses: Lens[] = []
         private expectedValue!: ExactValue | MatchValue;
@@ -98,6 +106,7 @@ export namespace Cyril {
          *      .its('my').its('value')
          * ```
          */
+        public its<T extends any, K extends keyof Subject, U extends Subject[K], R extends Promise<T> & U>(key: K): Expectation<T>; //Subject[K]>;
         public its<K extends keyof Subject>(key: K): Expectation<Subject[K]>;
         public its<K extends Property<Subject>>(key: K) {
             this.lenses.push(['its', key as string | number])
@@ -167,7 +176,6 @@ export namespace Cyril {
          * Verify this expectation.
          */
         public async verify() {
-            console.log("Link.verify")
             let { actual, lenses } = this;
             let value = actual;
             if (actual instanceof Promise) {
@@ -201,7 +209,7 @@ export namespace Cyril {
            let message = "Objects are deep equal"
            if (equal(expected, actual)) {
                // great!
-               process.stdout.write("\t" + chalk.green("✓") + " " + this.cmpMsg(expected, actual, message))
+            //    process.stdout.write("\t" + chalk.green("✓") + " " + this.cmpMsg(expected, actual, message))
            } else {
                this.fail(expected, actual, fnName, message)
            }
@@ -230,7 +238,6 @@ export namespace Cyril {
         }
 
         private fail(expected: any, actual: any, fnName: string, comment?: string) {
-            console.log("FAIL")
            let err = this.cmpMsg(expected, actual, fnName, comment)
            process.stdout.write("\t" + chalk.red("●") + "  " + err + "\n\n")
            throw new Error(err)
@@ -342,7 +349,6 @@ export namespace Cyril {
          * Verify ambient links + specs.
          */
         public async verify() {
-            // console.log("VERIFY ALL")
             await this.processAmbient();
             await this.verifySpecs();
             await this.verifyAmbient();
@@ -361,7 +367,6 @@ export namespace Cyril {
          * ```
          */
         public async verifyAmbient() {
-            // console.log("VERIFY AMBIENT")
             let ambientVerifiers = this.links.map(link => this.handleLink(link))
             await Promise.all(ambientVerifiers)
         }
@@ -370,7 +375,6 @@ export namespace Cyril {
          * Analyze the ambient environment (gathering any model specifications)
          */
         public async processAmbient() {
-            // console.log("PROCESS AMBIENT")
             let ambientProcessors = this.links.map(link => this.processLink(link))
             await Promise.all(ambientProcessors)
         }
@@ -388,7 +392,6 @@ export namespace Cyril {
          * ```
          */
         public async verifySpecs() {
-            // console.log("VERIFY SPECS")
             let specRunners = this.specs.map(spec => this.handleSpec(spec))
             await Promise.all(specRunners)
         }
@@ -398,7 +401,6 @@ export namespace Cyril {
          */
         public get output(): Box<WrappedFunction> {
             return new Box(new WrappedFunction("output()", () => {
-                // console.log("CHECK OUTPUT")
                 let history = this.logHistory.join('')
                 return(history)
             }))
@@ -432,34 +434,30 @@ export namespace Cyril {
         }
 
         describe(featureName: string, theSpec: () => void) {
-            this.links.push(
-                new Specification(featureName, theSpec)
-            )
+            this.links.push(new Specification(featureName, theSpec))
         }
 
         protected async handleSpec(spec: Specification) {
-            console.log("- " + spec.name)
             let testRunners = spec.cases.map(testCase => this.handleTestCase(testCase))
             await Promise.all(testRunners)
         }
 
         protected async handleTestCase(testCase: TestCase) {
-            console.log("  * " + testCase.name)
             try {
                 await testCase.fn()
             } catch(err) {
-                console.log("FAILED: " + testCase.name)
+                // console.log("FAILED: " + testCase.name)
             }
             let result: boolean = true
             await this.verifyAmbient()
             let message = testCase.name
             let sigil = result ? "✓" : "x"
-            process.stdout.write([sigil, message].join(' '))
+            // process.stdout.write([sigil, message].join(' '))
         }
 
         protected async handleLink<T>(link: Container<T>) {
             if (link instanceof Expectation) {
-                console.log("Link is expectation...")
+                // console.log("Link is expectation...")
                 await link.verify()
             } else if (link instanceof Command) {
                 let { op } = link
@@ -480,12 +478,13 @@ export namespace Cyril {
                 this.specs.push(link) //this.activeSpec)
                 console.log("THE SPEC: " + JSON.stringify(link))
             } else {
-                console.warn("Not processing non-spec link: " + JSON.stringify(link))
+                // console.warn("Not processing non-spec link: " + JSON.stringify(link))
             }
         }
     }
+
+    // The ambient Cyril global environment
     export const ambient: Environment = new Environment()
 }
 
-const cyril = Cyril.ambient
-export default cyril;
+export default Cyril.ambient;

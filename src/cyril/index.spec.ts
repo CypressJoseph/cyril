@@ -1,6 +1,6 @@
 import cyr from "."
 
-// let { log, }
+let { expect } = cyr;
 
 describe("Cyril", () => {
     beforeEach(() => cyr.reset())
@@ -31,12 +31,32 @@ describe("Cyril", () => {
     })
 
     describe('scenarios', () => {
+        it('is strongly-typed', () => {
+            let model = {
+                a: 1,
+                b: 'two',
+                c: () => 'three',
+                d: new Promise<Number>(res => setTimeout(() => res(4), 2000)),
+                e: {
+                    my: { nested: { property: 5.0 }}
+                }
+            }
+            cyr.wrap(model).expect().its('a').toBe(1)
+            cyr.wrap(model).expect().its('b').toBe('two')
+            cyr.wrap(model).expect().invokes('c').toBe('three')
+            
+            // well-typed!
+            cyr.expect(model.d).toBe(4)
+            // not well-typed! (and not equivalent somehow! doesn't even wait for promise to resolve?!)
+            // cyr.expect(model).its('d').toBe(4)
+        })
+
         it('logs', () => {
             cyr.log("hi there, world")
             cyr.output.expect().toMatch("hi there")
         })
 
-        it.only('bdd', () => {
+        it('bdd', () => {
             cyr.describe('a feature', () => {
                 cyr.log("within describe")
                 cyr.it('works', () => {
@@ -59,7 +79,7 @@ describe("Cyril", () => {
             let count = 0;
             let counter = cyr.wrap({ count, increment: () => count++ })
             counter.expect('count').toBe(0)
-            counter.invokes('increment')
+            // todo counter.invokes('increment')
             counter.expect('count').toBe(1)
         })
     })
