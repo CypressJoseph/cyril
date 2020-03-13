@@ -52,6 +52,7 @@ describe("Cyril", () => {
             // cyr.output.expect().toMatch("within describe")
             // cyr.output.expect().toMatch("within it")
             // todo tests to say: when i have a feature that fails i get an error etc, the suite fails etc
+            // (these might be easier stated as "here have these specs..." )
         })
 
         xit('mixing commands and expectations', () => {
